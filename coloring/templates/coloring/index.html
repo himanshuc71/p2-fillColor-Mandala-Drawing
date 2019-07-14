@@ -8,34 +8,10 @@
 
 	<script type="text/javascript" src="{% static 'coloring/vendors/jquery/jquery-3.3.1.min.js' %}"></script>
 	<script type="text/javascript" src="{% static 'coloring/vendors/paper/paper-full.min.js' %}"></script>
+	<link rel="stylesheet" type="text/css" href="{% static 'coloring/vendors/bootstrap/css/bootstrap.css' %}" />
+	<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 
-	<style type="text/css">
-		#color-palette {
-			width: 300px;
-			background-color: #f1f1f1;
-			display: flex;
-			flex-wrap: wrap;
-			position: absolute;
-			top: 0;
-		}
-
-		.swatch {
-			width: 24px;
-			height: 24px;
-			-moz-border-radius: 12px;
-			-webkit-border-radius: 12px;
-			border-radius: 12px;
-			margin: 3px;
-		}
-
-		#myCanvas {
-			padding-left: 0;
-		    padding-right: 0;
-		    margin-left: auto;
-		    margin-right: auto;
-		    display: block;
-		}
-	</style>
 
 	<script type="text/javascript" canvas="canvas">
 		window.onload = function() {
@@ -58,53 +34,164 @@
 			// your rectangle gradient interaction goes in this function
 			// you may also add code outside of the function (e.g., global variables)
 			
-			function myGradientInteraction(){
-				var tool = new paper.Tool();
-				var rectangle = new paper.Rectangle(new paper.Point(200,300), new paper.Point(500,500));
-      	var path = new paper.Path.Rectangle(rectangle);
-				path.fillColor = 'red';
+// 			function myGradientInteraction(){
+// 				var tool = new paper.Tool();
+// 				var rectangle = new paper.Rectangle(new paper.Point(200,300), new paper.Point(500,500));
+//       	var path = new paper.Path.Rectangle(rectangle);
+// 				path.fillColor = 'red';
 				
-				let start = 0; 
-				let end = 0;
-				tool.onMouseDown = function (event) {
-					if (path.contains(event.point)){
-						start = event.point;
-					}
-				}
+// 				let start = 0; 
+// 				let end = 0;
+// 				tool.onMouseDown = function (event) {
+// 					if (path.contains(event.point)){
+// 						start = event.point;
+// 					}
+// 				}
 
-				tool.onMouseUp = function (event) {
-					if (path.contains(start) && path.contains(event.point)){
-						let color1idx = cp.history.length-2;
-						let color2idx = cp.history.length-1;
-						end = event.point;
-						path.fillColor = {
-        			gradient: {
-            		stops: [cp.history[color1idx], cp.history[color2idx]],
-    					},
-							origin: start,
-            	destination: end
-					};
-					}
-				}
-			}
+// 				tool.onMouseUp = function (event) {
+// 					if (path.contains(start) && path.contains(event.point)){
+// 						let color1idx = cp.history.length-2;
+// 						let color2idx = cp.history.length-1;
+// 						end = event.point;
+// 						path.fillColor = {
+//         			gradient: {
+//             		stops: [cp.history[color1idx], cp.history[color2idx]],
+//     					},
+// 							origin: start,
+//             	destination: end
+// 					};
+// 					}
+// 				}
+// 			}
 
 			// your custom interaction goes here!
 			// you may replace everything
 			function myCustomInteraction() {
 				var tool = new paper.Tool();
+        var undoStack = [];
+        var redoColorStack = [];
+        var redoCellStack = [];
+        var undoColorStack = [];
+        
+        // Variables for color suggestions
+        var colorSuggest = false;
+        var modal = document.getElementById("myModal");
+        var span = document.getElementsByClassName("close")[0];
+        var redColors = ["#800000", "#FF6347", "#FF0000", "#F08080", "#FA8072"]
+        var blueColors = ["#000080", "#0020C2", "#2B60DE", "#736AFF", "#95B9C7"]
+        var greenColors = ["#F0E68C", "#FFFF00", "#ADFF2F", "#008000", "#006400"]
+        var recomendColors = [redColors, blueColors, greenColors]
+        var colorCounter = 0;
 
 				tool.onMouseDown = function (event) {
-				    var hit = mandala.item.hitTest(event.point, { tolerance: 10, fill: true });
-				    if (hit) {
-				        hit.item.fillColor = cp.history[cp.history.length - 1];
-				    }
+            if (colorSuggest) {
+                colorCounter += 1;
+                $('#myModal').css("display", "block");
+                createColorSuggestion(recomendColors[colorCounter % 3])
+                colorSuggest = false;
+            } else {
+              var hit = mandala.item.hitTest(event.point, { tolerance: 10, fill: true });
+              if (hit) {
+                  hit.item.fillColor = cp.history[cp.history.length - 1];
+                  undoStack.push(hit);
+              }
+            }
 				}
-			}
+        
+        //Color Suggestion Closing Pop up screen
+        span.onclick = function() {
+          $('#suggest-palette').empty();
+          $('#color-suggest').text('Color Suggestion');
+          modal.style.display = "none";
+        }
+        
+        window.onclick = function(event) {
+          if (event.target == modal) {
+            $('#suggest-palette').empty();
+            $('#color-suggest').text('Color Suggestion');
+            modal.style.display = "none";
+          }
+        }
 
+        
+				
+				// undo button
+        $('#undo').on('click', () => {
+          if(undoStack.length > 0){
+            lastHit = undoStack.pop();
+            redoColorStack.push(new paper.Color(lastHit.item.getFillColor()._components))
+            redoCellStack.push(lastHit)
+            lastHit.item.fillColor = 'white';
+          }
+        })
+				//redo button
+				$('#redo').on("click", () => {
+          if (redoCellStack.length > 0) {
+            redoCell = redoCellStack.pop()
+            redoCell.item.fillColor = redoColorStack.pop()
+            undoStack.push(redoCell)
+          }
+				})
+				
+				//eraser button
+				$('#eraser').on('click', () => {
+					$("html body").css("cursor: url('/static/coloring/images/eraser-cursor.png'), default");
+					let eraser = new paper.Tool();
+					eraser.activate();
+        	eraser.onMouseDown = function(event) {
+          var hit = mandala.item.hitTest(event.point, { tolerance: 10, fill: true });
+				    if (hit) {
+				        hit.item.fillColor = 'white';
+								undoStack.push(hit);
+            }
+					}
+					// put redo funcitonality
+        })
+				
+				//pencil
+				$('#pencil').on('click', () => {
+					tool.activate();
+				})
+				//crayon
+				$('#crayon').on('click', () => {
+					tool.activate();
+				})
+				//oilpaint
+				$('#oil-paint').on('click', () => {
+					tool.activate();
+				})
+				
+				//reset button
+				$('#reset').on("click", () => {
+					while(undoStack.length > 0){
+						lastHit = undoStack.pop();
+						lastHit.item.fillColor = 'white'
+					}
+          redoColorStack = [];
+          redoCellStack = [];
+				})
+        
+        $('#color-suggest').on("click", () => {
+          colorSuggest = !colorSuggest;
+          $('#color-suggest').text('Click the template!');
+        })
+				
+			}
+      
+      function createColorSuggestion(colors){
+        for (var i = colors.length - 1; i >= 0; i--) {
+					var $swatch = $("<div>").css("background-color", colors[i])
+									   .addClass("swatch");
+					$swatch.click(function(){
+						// add color to the color palette history
+					  	cp.history.push($(this).css("background-color"));
+					});
+					$('#suggest-palette').append($swatch);
+				}
+      }
 
 			// create a color palette with the given colors
 			function createColorPalette(colors){
-
 				// create a swatch for each color
 				for (var i = colors.length - 1; i >= 0; i--) {
 					var $swatch = $("<div>").css("background-color", colors[i])
@@ -134,6 +221,7 @@
 				getColorsCreatePalette();
 
 				paper.project.importSVG(mandala.filePath, function(item) { 
+          console.log(item)
 					mandala.item = item._children["design-freepik"];
 				    paper.project.insertLayer(0,mandala.item);
 
@@ -162,6 +250,40 @@
 <body>	
 
 	<canvas id="myCanvas" width="750px" height="750px"></canvas>
-	<div id="color-palette"></div>
+	<div class="container-fluid">
+		<ul class="horizontal-menu">
+        <li><button class="btn" id="save"><i class="fa fa-floppy-o fa-fw"></i> Save </button>
+        <li><button class="btn" id="share"><i class="fa fa-share fa-fw"></i> Share </button>
+        <li><button class="btn" id="reset"><i class="fa fa-times fa-fw"></i> Reset </button>
+    </ul>
+  	
+    <div class="vertical-menu">
+      	<button class="btn" id="undo"> <i class="fa fa-undo fa-fw"></i> Undo</button>
+      	<button class="btn" id="redo"> <i class="fa fa-repeat fa-fw"></i> Redo</button>
+      	<button class="btn" id="eraser"><i class="fa fa-eraser fa-fw"></i> Eraser</button>
+      	<button class="btn" id="pencil"> <i class="fa fa-pencil fa-fw"></i> Pencil</button>
+      	<button class="btn" id="crayon"> <i class="fa fa-pencil-square fa-fw"></i> Crayon</button>
+      	<button class="btn" id="oil-paint"> <i class="fa fa-paint-brush fa-fw"></i> Oil Paint</button>
+      	<button class="btn" id="zoom-in"> <i class="fa fa-search-plus fa-fw"></i> Zoom-In</button>
+				<button class="btn" id="zoom-out"><i class="fa fa-search-minus fa-fw"></i> Zoom-Out</button>
+				<button class="btn" id="music"><i class="fa fa-music fa-fw"></i> Music</button>
+  	</div>
+    
+		<div id="color-palette"></div>
+    <div id="myModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>Recommended colors for this section is...</p>
+        <div id="suggest-palette"></div>
+      </div>
+    </div>
+    
+    <button id="color-suggest"><b>Color Suggestion</b></button>
+		
+	</div>	
+  
+	
+  
+  
 </body>
 </html>

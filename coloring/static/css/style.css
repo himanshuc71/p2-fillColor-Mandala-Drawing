@@ -1,0 +1,149 @@
+.horizontal-menu {
+      top: 0%;
+      left: 0;
+      position: fixed;
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: white;
+      width: 270px;
+    }
+
+    .horizontal-menu li {
+      float: left;
+    }
+
+
+
+/*     .horizontal-menu li button {
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      width: 90px;
+      height: 75px;
+    } */
+
+/*     .horizontal-menu li button:hover {
+      background-color: #111;
+      color: white;
+    } */
+
+		#color-palette {
+			background-color: #f1f1f1;
+			display: flex;
+			flex-wrap: wrap;
+			position: absolute;
+			width: 600px;
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      margin-left: -300px;
+		}
+
+		.swatch {
+			width: 24px;
+			height: 24px;
+			-moz-border-radius: 12px;
+			-webkit-border-radius: 12px;
+			border-radius: 12px;
+			margin: 3px;
+		}
+
+		#myCanvas {
+			  padding-left: 0;
+		    padding-right: 0;
+		    margin-left: auto;
+		    margin-right: auto;
+		    display: block;
+		}
+    
+    .vertical-menu {
+      width: 200px;
+      float: left;
+      position: fixed;
+      left: 0;
+      top: 15%;
+      width: 8em;
+    }
+    
+    .modal {
+      display: none; 
+      position: fixed; 
+      z-index: 1; 
+      padding-top: 100px; 
+      left: 0;
+      top: 0;
+      width: 100%; 
+      height: 100%; 
+      overflow: auto; 
+    }
+    
+    .modal-content {
+      background-color: #fefefe;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+    }
+
+    .close {
+      color: #aaaaaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+/*     .vertical-menu button {
+      background-color: #eee;
+      color: black;
+      display: block;
+      padding: 12px;
+      width: 100px;
+      height: 100px;
+    } */
+
+		.btn {
+  	background-color: DodgerBlue; 
+  	border: none;
+  	color: white; /* White text */
+    text-align: center;
+  	padding: 14px 16px; 
+    display: block;
+  	font-size: 15px; 
+  	cursor: pointer; /* Mouse pointer on hover */
+    width: 100%;  
+		}
+		
+		.btn:hover {
+  	background-color: RoyalBlue;
+		}
+    
+    #color-suggest {
+        top:0;
+        right:0;
+        position: fixed;
+        width: 100px;
+        height: 80px;
+    }
+
+    #color-suggest:hover {
+      background-color: #ccc;
+    }
+
+    #suggest-palette {
+			display: flex;
+			flex-wrap: wrap;
+			width: 600px;
+    }
+
+    
