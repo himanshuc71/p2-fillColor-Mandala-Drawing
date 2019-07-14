@@ -1,4 +1,4 @@
-.horizontal-menu {
+    .horizontal-menu {
       top: 0%;
       left: 0;
       position: fixed;
@@ -13,23 +13,6 @@
     .horizontal-menu li {
       float: left;
     }
-
-
-
-/*     .horizontal-menu li button {
-      display: block;
-      color: white;
-      text-align: center;
-      padding: 14px 16px;
-      text-decoration: none;
-      width: 90px;
-      height: 75px;
-    } */
-
-/*     .horizontal-menu li button:hover {
-      background-color: #111;
-      color: white;
-    } */
 
 		#color-palette {
 			background-color: #f1f1f1;
@@ -73,10 +56,10 @@
       display: none; 
       position: fixed; 
       z-index: 1; 
-      padding-top: 100px; 
+      padding: 140px 40px 100px 120px; 
       left: 0;
       top: 0;
-      width: 100%; 
+      width: 80%; 
       height: 100%; 
       overflow: auto; 
     }
@@ -85,7 +68,7 @@
       background-color: #fefefe;
       margin: auto;
       padding: 20px;
-      border: 1px solid #888;
+      border: 2px solid #888;
       width: 80%;
     }
 
@@ -102,15 +85,6 @@
       text-decoration: none;
       cursor: pointer;
     }
-
-/*     .vertical-menu button {
-      background-color: #eee;
-      color: black;
-      display: block;
-      padding: 12px;
-      width: 100px;
-      height: 100px;
-    } */
 
 		.btn {
   	background-color: DodgerBlue; 
@@ -131,19 +105,30 @@
     #color-suggest {
         top:0;
         right:0;
+        color: white;
+        border: none;
+        background-color: DodgerBlue;
+        text-align: center;
+        font-size: 24px;
         position: fixed;
-        width: 100px;
-        height: 80px;
+        cursor: pointer;
+        width: 180px;
+        height: 100px;
     }
 
     #color-suggest:hover {
-      background-color: #ccc;
+      background-color: RoyalBlue;
     }
 
     #suggest-palette {
 			display: flex;
 			flex-wrap: wrap;
 			width: 600px;
+    }
+
+    p{
+      color: #43464C;
+      font-size: 20px;
     }
 
     

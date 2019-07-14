@@ -68,10 +68,10 @@
 			// you may replace everything
 			function myCustomInteraction() {
 				var tool = new paper.Tool();
-        var undoStack = [];
         var redoColorStack = [];
         var redoCellStack = [];
         var undoColorStack = [];
+				var undoCellStack = [];
         
         // Variables for color suggestions
         var colorSuggest = false;
@@ -93,7 +93,8 @@
               var hit = mandala.item.hitTest(event.point, { tolerance: 10, fill: true });
               if (hit) {
                   hit.item.fillColor = cp.history[cp.history.length - 1];
-                  undoStack.push(hit);
+                  undoCellStack.push(hit);
+									undoColorStack.push(new paper.Color(hit.item.getFillColor()._components));
               }
             }
 				}
@@ -101,77 +102,117 @@
         //Color Suggestion Closing Pop up screen
         span.onclick = function() {
           $('#suggest-palette').empty();
-          $('#color-suggest').text('Color Suggestion');
+          $('#color-suggest').html('<i class="fa fa-info fa-fw"></i> <b>Color Suggestion</b>');
           modal.style.display = "none";
         }
         
         window.onclick = function(event) {
           if (event.target == modal) {
             $('#suggest-palette').empty();
-            $('#color-suggest').text('Color Suggestion');
+            $('#color-suggest').html('<i class="fa fa-info fa-fw"></i> <b>Color Suggestion</b>');
             modal.style.display = "none";
           }
         }
 
         
-				
+				// all buttons functionality
 				// undo button
         $('#undo').on('click', () => {
-          if(undoStack.length > 0){
-            lastHit = undoStack.pop();
-            redoColorStack.push(new paper.Color(lastHit.item.getFillColor()._components))
-            redoCellStack.push(lastHit)
-            lastHit.item.fillColor = 'white';
+          if(undoCellStack.length > 0){
+						document.body.style.cursor = 'default';
+					  tool.activate();
+            lastHit = undoCellStack.pop();
+            redoColorStack.push(undoColorStack.pop());
+            redoCellStack.push(lastHit);
+            lastHit.item.fillColor = 'white';   // fix this
           }
         })
 				//redo button
 				$('#redo').on("click", () => {
+					document.body.style.cursor = 'default';
+					tool.activate();
           if (redoCellStack.length > 0) {
             redoCell = redoCellStack.pop()
             redoCell.item.fillColor = redoColorStack.pop()
-            undoStack.push(redoCell)
+            undoCellStack.push(redoCell)
           }
 				})
 				
 				//eraser button
 				$('#eraser').on('click', () => {
-					$("html body").css("cursor: url('/static/coloring/images/eraser-cursor.png'), default");
+					document.body.style.cursor = "url('/static/coloring/images/eraser-cursor.png'), default";
 					let eraser = new paper.Tool();
 					eraser.activate();
         	eraser.onMouseDown = function(event) {
           var hit = mandala.item.hitTest(event.point, { tolerance: 10, fill: true });
 				    if (hit) {
+								redoCellStack.push(hit);
+								redoColorStack.push(new paper.Color(hit.item.getFillColor()._components));
+								undoCellStack.push(hit);
+								undoColorStack.push(new paper.Color(hit.item.getFillColor()._components));
 				        hit.item.fillColor = 'white';
-								undoStack.push(hit);
             }
 					}
-					// put redo funcitonality
         })
 				
-				//pencil
+				//pencil button
 				$('#pencil').on('click', () => {
+					document.body.style.cursor = 'default';
 					tool.activate();
 				})
-				//crayon
+				//crayon button
 				$('#crayon').on('click', () => {
+					document.body.style.cursor = 'default';
 					tool.activate();
 				})
-				//oilpaint
+				//oilpaint button
 				$('#oil-paint').on('click', () => {
+					document.body.style.cursor = 'default';
 					tool.activate();
+				})
+				
+				//zoom-in button
+				$('#zoom-in').on('click', () => {
+					document.body.style.cursor = 'zoom-in';
+					tool.activate();
+				})
+				
+				//zoom-out button
+				$('#zoom-out').on('click', () => {
+					document.body.style.cursor = 'zoom-out';
+					tool.activate();
+				})
+				
+				//music button
+				$('#music').on('click', () => {
+					document.body.style.cursor = 'default';
+					tool.activate();
+				})
+				
+				//save button
+				$('#save').on("click", (event) => {
+					document.body.style.cursor = 'default';
+					tool.activate();
+					let canvas_img = canvas.toDataURL('image/jpg');
+					event.href = canvas_img;
 				})
 				
 				//reset button
 				$('#reset').on("click", () => {
-					while(undoStack.length > 0){
-						lastHit = undoStack.pop();
+					document.body.style.cursor = 'default';
+					tool.activate();
+					while(undoCellStack.length > 0){
+						lastHit = undoCellStack.pop();
 						lastHit.item.fillColor = 'white'
 					}
           redoColorStack = [];
           redoCellStack = [];
+					undoCellStack = [];
 				})
         
         $('#color-suggest').on("click", () => {
+					document.body.style.cursor = 'default';
+					tool.activate();
           colorSuggest = !colorSuggest;
           $('#color-suggest').text('Click the template!');
         })
@@ -252,7 +293,7 @@
 	<canvas id="myCanvas" width="750px" height="750px"></canvas>
 	<div class="container-fluid">
 		<ul class="horizontal-menu">
-        <li><button class="btn" id="save"><i class="fa fa-floppy-o fa-fw"></i> Save </button>
+			<li><a id="download" download="myCanvas.jpg" href=""> <button class="btn" id="save"><i class="fa fa-floppy-o fa-fw"></i> Save </button></a>
         <li><button class="btn" id="share"><i class="fa fa-share fa-fw"></i> Share </button>
         <li><button class="btn" id="reset"><i class="fa fa-times fa-fw"></i> Reset </button>
     </ul>
@@ -273,12 +314,12 @@
     <div id="myModal" class="modal">
       <div class="modal-content">
         <span class="close">&times;</span>
-        <p>Recommended colors for this section is...</p>
+        <p>Recommended colors for this section are...</p>
         <div id="suggest-palette"></div>
       </div>
     </div>
     
-    <button id="color-suggest"><b>Color Suggestion</b></button>
+    <button id="color-suggest"><i class="fa fa-info fa-fw"></i> <b>Color Suggestion</b> </button>
 		
 	</div>	
   
