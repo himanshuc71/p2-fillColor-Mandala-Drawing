@@ -11,6 +11,7 @@
 	<link rel="stylesheet" type="text/css" href="{% static 'coloring/vendors/bootstrap/css/bootstrap.css' %}" />
 	<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+	<link href="https://fonts.googleapis.com/css?family=Barriecito&display=swap" rel="stylesheet">
 
 
 	<script type="text/javascript" canvas="canvas">
@@ -72,6 +73,7 @@
         var redoCellStack = [];
         var undoColorStack = [];
 				var undoCellStack = [];
+        var eraserOn = false;
         
         // Variables for color suggestions
         var colorSuggest = false;
@@ -94,7 +96,7 @@
               if (hit) {
                   hit.item.fillColor = cp.history[cp.history.length - 1];
                   undoCellStack.push(hit);
-									undoColorStack.push(new paper.Color(hit.item.getFillColor()._components));
+									// undoColorStack.push(new paper.Color(hit.item.getFillColor()._components));
               }
             }
 				}
@@ -122,9 +124,14 @@
 						document.body.style.cursor = 'default';
 					  tool.activate();
             lastHit = undoCellStack.pop();
-            redoColorStack.push(undoColorStack.pop());
+            redoColorStack.push(new paper.Color(lastHit.item.getFillColor()._components));
             redoCellStack.push(lastHit);
-            lastHit.item.fillColor = 'white';   // fix this
+            if (eraserOn){
+              var erasedCol = undoColorStack.pop()
+              lastHit.item.fillColor = erasedCol;
+            } else {
+              lastHit.item.fillColor = 'white';   // have to check 
+            }
           }
         })
 				//redo button
@@ -140,6 +147,7 @@
 				
 				//eraser button
 				$('#eraser').on('click', () => {
+          eraserOn = true;
 					document.body.style.cursor = "url('/static/coloring/images/eraser-cursor.png'), default";
 					let eraser = new paper.Tool();
 					eraser.activate();
@@ -159,16 +167,22 @@
 				$('#pencil').on('click', () => {
 					document.body.style.cursor = 'default';
 					tool.activate();
+          eraserOn = false;
+          undoColorStack = [];
 				})
 				//crayon button
 				$('#crayon').on('click', () => {
 					document.body.style.cursor = 'default';
 					tool.activate();
+          eraserOn = false;
+          undoColorStack = [];
 				})
 				//oilpaint button
 				$('#oil-paint').on('click', () => {
 					document.body.style.cursor = 'default';
 					tool.activate();
+          eraserOn = false;
+          undoColorStack = [];
 				})
 				
 				//zoom-in button
@@ -215,6 +229,7 @@
 					tool.activate();
           colorSuggest = !colorSuggest;
           $('#color-suggest').text('Click the template!');
+          eraser = false;
         })
 				
 			}
@@ -320,6 +335,11 @@
     </div>
     
     <button id="color-suggest"><i class="fa fa-info fa-fw"></i> <b>Color Suggestion</b> </button>
+		
+		<div class = 'logo'>
+			<text> C<span style="color: #ffff00">o</span><span style="color: #00e600">l</span><span style="color: #ff5050">o</span><span style="color:#99ccff">r</span> 
+				<span style="color:#660000"> M</span><span style="color:#ffffb3">e</span></text>
+		</div>
 		
 	</div>	
   

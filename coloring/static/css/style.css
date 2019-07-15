@@ -33,6 +33,7 @@
 			-webkit-border-radius: 12px;
 			border-radius: 12px;
 			margin: 3px;
+			background-color: #f1f1f1;
 		}
 
 		#myCanvas {
@@ -111,10 +112,28 @@
         text-align: center;
         font-size: 24px;
         position: fixed;
-        cursor: pointer;
+        cursor: help;
         width: 180px;
         height: 100px;
     }
+
+		.logo{
+			bottom:0;
+			right:0;
+			position: fixed;
+			width: 250px;
+			height: 230px;
+			background-color: DodgerBlue;
+			font-family: 'Barriecito', cursive;
+			font-size: 80px;
+			text-align: center;
+			color: red;
+			cursor: default;
+		}
+
+.logo:hover{
+	background-color: RoyalBlue;
+}
 
     #color-suggest:hover {
       background-color: RoyalBlue;
